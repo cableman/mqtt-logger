@@ -1,0 +1,28 @@
+{
+  "name": "mqtt-logger",
+  "version": "1.0.0",
+  "description": "Log MQTT messages to influxDB",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/cableman/mqtt-logger.git"
+  },
+  "keywords": [
+    "MQTT",
+    "IOT",
+    "influx"
+  ],
+  "author": "Jesper Kristensen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cableman/mqtt-logger/issues"
+  },
+  "homepage": "https://github.com/cableman/mqtt-logger#readme",
+  "dependencies": {
+    "influx": "^5.0.7",
+    "mqtt": "^2.15.0"
+  }
+}

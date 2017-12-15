@@ -1,0 +1,7 @@
+{
+	"clientId": "DataLoggerInflux",
+	"host": "mqtt://localhost",
+	"port": "1883",
+	"username": "",
+	"password": ""
+}
