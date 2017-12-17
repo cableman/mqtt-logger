@@ -4,6 +4,8 @@
   "description": "Log MQTT messages to influxDB",
   "main": "app.js",
   "scripts": {
+    "start-dev": "NODE_ENV=development DEBUG=DataLogger* ./node_modules/.bin/nodemon app.js",
+    "start": "NODE_ENV=production app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -22,7 +24,11 @@
   },
   "homepage": "https://github.com/cableman/mqtt-logger#readme",
   "dependencies": {
+    "debug": "^3.1.0",
     "influx": "^5.0.7",
     "mqtt": "^2.15.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.13.2"
   }
 }
