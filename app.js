@@ -23,18 +23,18 @@ for (var i in config.sensors) {
   }
 
   var db = new Influx.InfluxDB({
-    host: '192.168.2.20',
+    host: config.influx.host,
     database: config.sensors[i].database,
     schema: schema
   });
 
   db.getDatabaseNames()
-    .then(names => {
+    .then(function (names) {
       if (!names.includes(config.sensors[i].database)) {
         return db.createDatabase(config.sensors[i].database);
       }
     })
-    .then(() => {
+    .then(function () {
       debug('READY');
 
       var mqttClient  = mqtt.connect(config.host, {
@@ -45,7 +45,7 @@ for (var i in config.sensors) {
         password: config.password
       });
 
-      mqttClient.on('connect', (connack) => {  
+      mqttClient.on('connect', function (connack) {  
         if (connack.sessionPresent) {
           debug('Already subbed, no subbing necessary');
         } 
@@ -72,7 +72,8 @@ for (var i in config.sensors) {
       })
 
     })
-    .catch(err => {
+    .catch(function (err) {
+      console.log(err);
       console.error(`Error creating Influx database!`);
     })
 }
