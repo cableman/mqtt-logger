@@ -5,7 +5,6 @@ var config = require('./config.json');
 
 var debug = require('debug')('DataLogger');
 var mqtt = require('mqtt')
-
 var Influx = require('influx');
 
 // Define influx.
@@ -35,8 +34,7 @@ for (var i in config.sensors) {
       }
     })
     .then(function () {
-      debug('READY');
-
+      // Connect to the MQTT server.
       var mqttClient  = mqtt.connect(config.host, {
         port: config.port,
         clean: false,
@@ -45,19 +43,24 @@ for (var i in config.sensors) {
         password: config.password
       });
 
+      /**
+       * On connection to MQTT.
+       */
       mqttClient.on('connect', function (connack) {  
         if (connack.sessionPresent) {
-          debug('Already subbed, no subbing necessary');
+          debug('Already subscribe, no subscribe necessary');
         } 
         else {
-          debug('First session! Subbing.');
+          debug('First session! Subscribing...');
           
           mqttClient.subscribe('#', { qos: 2 });
         }
       });
 
+      /**
+       * On message received handler.
+       */
       mqttClient.on('message', function (topic, message) {
-        // message is Buffer
         var res = topic.split('/');
         var field = res.pop();
         var fields = {};
@@ -77,7 +80,3 @@ for (var i in config.sensors) {
       console.error(`Error creating Influx database!`);
     })
 }
-
-
-
-// Dis-connect.
