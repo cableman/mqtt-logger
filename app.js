@@ -23,62 +23,51 @@ for (var i in config.sensors) {
     schema[0].fields[sensor.fields[j]] = Influx.FieldType.FLOAT;
   }
 
+  // Create database connection.
   db[sensor.topic] = new Influx.InfluxDB({
     host: config.influx.host,
     database: sensor.database,
     schema: schema
   });
 
-  db[sensor.topic].getDatabaseNames()
-    .then(function (names) {
-      if (!names.includes(sensor.database)) {
-        return db[sensor.topic].createDatabase(sensor.database);
-      }
-    })
-    .then(function () {
-      // Connect to the MQTT server.
-      var mqttClient  = mqtt.connect(config.host, {
-        port: config.port,
-        clean: false,
-        clientId: config.clientId,
-        username: config.username,
-        password: config.password
-      });
 
-      /**
-       * On connection to MQTT.
-       */
-      mqttClient.on('connect', function (connack) {  
-        if (connack.sessionPresent) {
-          debug('Already subscribe, no subscribe necessary');
-        } 
-        else {
-          debug('First session! Subscribing...');
-          
-          mqttClient.subscribe('#', { qos: 2 });
-        }
-      });
+  // Connect to the MQTT server.
+  var mqttClient  = mqtt.connect(config.host, {
+    port: config.port,
+    clean: false,
+    clientId: config.clientId,
+    username: config.username,
+    password: config.password
+  });
 
-      /**
-       * On message received handler.
-       */
-      mqttClient.on('message', function (topic, message) {
-        var res = topic.split('/');
-        var field = res.pop();
-        var fields = {};
-        fields[field] = parseFloat(message.toString())
+  /**
+   * On connection to MQTT.
+   */
+  mqttClient.on('connect', function (connack) {
+    if (connack.sessionPresent) {
+      debug('Already subscribe, no subscribe necessary');
+    }
+    else {
+      debug('First session! Subscribing...');
 
-        var data = [{
-          measurement: 'sensor1',
-          fields: fields
-        }]
+      mqttClient.subscribe('#', { qos: 2 });
+    }
+  });
 
-        db[res.join('/')].writePoints(data);
-      })
+  /**
+   * On message received handler.
+   */
+  mqttClient.on('message', function (topic, message) {
+    var res = topic.split('/');
+    var field = res.pop();
+    var fields = {};
+    fields[field] = parseFloat(message.toString())
 
-    })
-    .catch(function (err) {
-      console.log(err);
-      console.error(`Error creating Influx database!`);
-    })
+    var data = [{
+      measurement: 'sensor1',
+      fields: fields
+    }]
+
+    db[res.join('/')].writePoints(data);
+  })
 }
