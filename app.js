@@ -7,6 +7,8 @@ var debug = require('debug')('DataLogger');
 var mqtt = require('mqtt')
 var Influx = require('influx');
 
+var db = [];
+
 // Define influx.
 for (var i in config.sensors) {
   var sensor = config.sensors[i];
@@ -21,16 +23,16 @@ for (var i in config.sensors) {
     schema[0].fields[sensor.fields[j]] = Influx.FieldType.FLOAT;
   }
 
-  var db = new Influx.InfluxDB({
+  db[sensor.topic] = new Influx.InfluxDB({
     host: config.influx.host,
-    database: config.sensors[i].database,
+    database: sensor.database,
     schema: schema
   });
 
-  db.getDatabaseNames()
+  db[sensor.topic].getDatabaseNames()
     .then(function (names) {
-      if (!names.includes(config.sensors[i].database)) {
-        return db.createDatabase(config.sensors[i].database);
+      if (!names.includes(sensor.database)) {
+        return db[sensor.topic].createDatabase(sensor.database);
       }
     })
     .then(function () {
@@ -71,7 +73,7 @@ for (var i in config.sensors) {
           fields: fields
         }]
 
-        db.writePoints(data);
+        db[res.join('/')].writePoints(data);
       })
 
     })
