@@ -68,7 +68,12 @@ mqttClient.on('message', function (topic, message) {
     fields: fields
   }]
 
-  debug(db);
-  db[res.join('/')].writePoints(data);
+  var index = res.join('/');
+  if (db.hasOwnProperty(index)) {
+    db[index].writePoints(data);
+  }
+  else {
+    debug('Database ' + index + ' not found!');
+  }
 })
 
