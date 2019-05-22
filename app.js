@@ -39,35 +39,37 @@ for (var i in config.sensors) {
     username: config.username,
     password: config.password
   });
-
-  /**
-   * On connection to MQTT.
-   */
-  mqttClient.on('connect', function (connack) {
-    if (connack.sessionPresent) {
-      debug('Already subscribe, no subscribe necessary');
-    }
-    else {
-      debug('First session! Subscribing...');
-
-      mqttClient.subscribe('#', { qos: 2 });
-    }
-  });
-
-  /**
-   * On message received handler.
-   */
-  mqttClient.on('message', function (topic, message) {
-    var res = topic.split('/');
-    var field = res.pop();
-    var fields = {};
-    fields[field] = parseFloat(message.toString())
-
-    var data = [{
-      measurement: 'sensor1',
-      fields: fields
-    }]
-
-    db[res.join('/')].writePoints(data);
-  })
 }
+
+/**
+ * On connection to MQTT.
+ */
+mqttClient.on('connect', function (connack) {
+  if (connack.sessionPresent) {
+    debug('Already subscribe, no subscribe necessary');
+  }
+  else {
+    debug('First session! Subscribing...');
+
+    mqttClient.subscribe('#', { qos: 2 });
+  }
+});
+
+/**
+ * On message received handler.
+ */
+mqttClient.on('message', function (topic, message) {
+  var res = topic.split('/');
+  var field = res.pop();
+  var fields = {};
+  fields[field] = parseFloat(message.toString())
+
+  var data = [{
+    measurement: 'sensor1',
+    fields: fields
+  }]
+
+  debug(db);
+  db[res.join('/')].writePoints(data);
+})
+
