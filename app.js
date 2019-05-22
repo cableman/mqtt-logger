@@ -29,6 +29,8 @@ for (var i in config.sensors) {
     database: sensor.database,
     schema: schema
   });
+
+  db[sensor.topic].createDatabase(sensor.database);
 }
 
 // Connect to the MQTT server.
