@@ -9,7 +9,7 @@ var Influx = require('influx');
 
 var db = [];
 
-// Define influx.
+// Define influx databases.
 for (var i in config.sensors) {
   var sensor = config.sensors[i];
 
@@ -29,17 +29,16 @@ for (var i in config.sensors) {
     database: sensor.database,
     schema: schema
   });
-
-
-  // Connect to the MQTT server.
-  var mqttClient  = mqtt.connect(config.host, {
-    port: config.port,
-    clean: false,
-    clientId: config.clientId,
-    username: config.username,
-    password: config.password
-  });
 }
+
+// Connect to the MQTT server.
+var mqttClient  = mqtt.connect(config.host, {
+  port: config.port,
+  clean: false,
+  clientId: config.clientId,
+  username: config.username,
+  password: config.password
+});
 
 /**
  * On connection to MQTT.
